@@ -6,4 +6,4 @@ COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
 
-ENTRYPOINT ["java","-cp","app:app/lib/*","br.com.DioenD.aws_project.AwsProjectApplication"]
+ENTRYPOINT ["java","-cp","app:app/lib/*","br.com.dioend.aws_project.AwsProjectApplication"]
