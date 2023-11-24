@@ -1,3 +1,20 @@
+buildscript {
+	ext {
+		springBootVersion = '2.4.0-SNAPSHOT'
+	}
+	repositories {
+		mavenCentral()
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+//		classpath('gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.22.1')
+		classpath("com.palantir.gradle.docker:gradle-docker:0.35.0")
+	}
+}
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.0-SNAPSHOT'
@@ -5,11 +22,30 @@ plugins {
 	id 'com.palantir.docker' version '0.35.0'
 }
 
-group = 'br.com.dioend'
-version = '1.0.0-SNAPSHOT'
+group = 'diovaneluispacheti'
+version = '1.0.0'
 
 java {
 	sourceCompatibility = '17'
+}
+
+bootJar {
+	archiveBaseName = 'image_aws_project'
+	version = '1.0.0'
+}
+
+task unpack(type: Copy) {
+	dependsOn bootJar
+	from(zipTree(tasks.bootJar.outputs.files.singleFile))
+	into("build/dependency")
+}
+
+docker {
+	name "${project.group}/${project.name}"
+	buildx true
+	platform 'linux/amd64'
+	copySpec.from(tasks.unpack.outputs).into('dependency')
+	buildArgs(['DEPENDENCY' : "dependency"])
 }
 
 repositories {
@@ -33,3 +69,4 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+apply plugin: "com.palantir.docker"
